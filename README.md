@@ -187,15 +187,19 @@ python bates_ml_calibration.py
 # Side-by-side comparison (requires all three .pt checkpoints)
 python compare_models.py
 ```
-
 ---
 
-## Future Work
+## Related Models and Research Directions
 
-- **Greeks via autograd** — exact Greeks come for free from the differentiable pricer
-- **Variance-swap pricing** from calibrated parameters using closed-form formulas under Heston/Bates
-- **Calibration stability** — running the pipeline daily on historical SPY surfaces to study parameter time-series
-- **Rough Heston** — affine models hit a structural limit on SPY's short-dated skew. Rough Heston (H ≈ 0.1) produces skew decay of `T^(H−0.5)` matching the empirically observed `T^(−0.4)` decay, but its CF requires a fractional Riccati solver.
+This project focuses on stochastic-volatility and jump-diffusion models that admit characteristic-function pricing via the COS method. A few related directions worth noting:
+
+- **SABR (Hagan et al. 2002)** — the dominant per-maturity smile-interpolation model on rates and equity desks. SABR doesn't fit the CF/COS framework: its closed-form asymptotic formula gives implied vol directly, making calibration trivial via Levenberg-Marquardt (~5 ms per smile). It excels at interpolating individual smiles but lacks term-structure dynamics, so the typical desk practice is to use SABR for smile interpolation and a richer model (Heston, Bates, or rough Heston) for exotic pricing and risk.
+
+- **Rough Heston (El Euch & Rosenbaum 2018)** — affine models hit a structural limit on SPY's short-dated skew, visible in this project as `kappa` pinned at its ceiling for both Heston and Bates calibrations. Rough Heston (Hurst index `H ≈ 0.1`) produces skew decay of `T^(H−0.5)`, matching the empirically observed `T^(−0.4)` decay on SPY. Its CF requires a fractional Riccati solver, making the ML-calibration speedup even more impactful.
+
+- **Neural SDEs** — instead of calibrating a parametric model, train a network to *be* the diffusion directly from prices. Removes the model-selection problem at the cost of interpretability.
+
+- **Mixture density / Bayesian networks** — output a distribution over parameters rather than point estimates, making identifiability ambiguity explicit (relevant for Bates' `lam`/`sigma_v` overlap).
 
 ---
 
