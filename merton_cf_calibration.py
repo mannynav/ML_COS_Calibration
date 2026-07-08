@@ -18,6 +18,11 @@ Run:  python merton_cf_calibration.py
 Deps: numpy torch matplotlib  (pip install torch matplotlib numpy)
 """
 
+"""
+Note: This is the prototype of the Merton COS Pricer - ml_calibation.py
+
+"""
+
 import numpy as np
 import torch
 import torch.nn as nn
